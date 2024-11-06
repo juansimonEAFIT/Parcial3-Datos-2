@@ -17,6 +17,7 @@ private:
     // Funciones auxiliares
     void dividirNodo(NodoBPlus* nodo, int indice, NodoBPlus* hijo);
     void insertarNoLleno(NodoBPlus* nodo, const std::string& clave, Tabla* tabla);
+    void mostrarArbolAux(NodoBPlus* nodo, std::string prefix, bool esUltimo);
 
 public:
     ArbolBPlus(int orden);
@@ -26,6 +27,7 @@ public:
     void seleccionar(const std::string& tabla, const std::vector<std::string>& columnas);
     void actualizar(const std::string& tabla, const std::map<std::string, std::string>& asignaciones, const std::string& condicion);
     void eliminar(const std::string& tabla, const std::string& condicion);
+    void mostrarArbol();
 };
 
 #endif
