@@ -30,15 +30,15 @@ int main() {
 
     arbol.mostrarArbol();
     std::cout << "\nTabla original" << std::endl;
-    arbol.seleccionar("Clientes", {"ID", "Nombre"});
+    arbol.seleccionar("Clientes", {"Edad", "Ciudad"});
 
-    std::cout << "\nTabla actualizada 1" << std::endl;
-    arbol.actualizar("Clientes", {{"Edad", "26"}}, "ID = 1");
-    arbol.seleccionar("Clientes", {"ID", "Nombre", "Edad"});
+    // std::cout << "\nTabla actualizada 1" << std::endl;
+    // arbol.actualizar("Clientes", {{"Edad", "26"}}, "ID = 1");
+    // arbol.seleccionar("Clientes", {"ID", "Nombre", "Edad"});
 
-    std::cout << "\nTabla actualizada 2" << std::endl;
-    arbol.eliminar("Clientes", "ID = 2");
-    arbol.seleccionar("Clientes", {"ID", "Nombre", "Edad"});
+    // std::cout << "\nTabla actualizada 2" << std::endl;
+    // arbol.eliminar("Clientes", "ID = 2");
+    // arbol.seleccionar("Clientes", {"ID", "Nombre", "Edad"});
 
 
     return 0;
