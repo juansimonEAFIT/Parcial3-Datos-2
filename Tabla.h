@@ -16,7 +16,7 @@ struct Tabla {
     Tabla(const std::string& nombre, const std::vector<std::string>& columnas);
 
     void insertarFila(const std::vector<std::string>& fila);
-    void mostrarTabla();
+    void mostrarTabla(const std::vector<std::string>& columnas);
     void actualizarTabla(const std::map<std::string, std::string>& asignaciones, const std::string& condicion);
     void eliminarFilas(const std::string& condicion);
 };

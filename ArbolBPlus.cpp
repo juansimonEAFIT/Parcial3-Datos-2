@@ -169,7 +169,7 @@ void ArbolBPlus::seleccionar(const std::string& tabla, const std::vector<std::st
     }
 
     // Mostrar la tabla
-    it->second.mostrarTabla();
+    it->second.mostrarTabla(columnas);
 }
 
 // Implementación básica de actualizar

@@ -8,10 +8,11 @@ void Tabla::insertarFila(const std::vector<std::string>& fila) {
     filas.push_back(fila);
 }
 
-void Tabla::mostrarTabla() {
+void Tabla::mostrarTabla(const std::vector<std::string>& columnas) {
     std::cout << "Tabla: " << nombre << std::endl;
 
     std::cout << "Columnas: ";
+    
     for (size_t i = 0; i < columnas.size(); ++i) {
         std::cout << columnas[i];
         if (i < columnas.size() - 1) std::cout << ", ";
@@ -19,7 +20,7 @@ void Tabla::mostrarTabla() {
     std::cout << std::endl;
 
     for (const auto& fila : filas) {
-        for (size_t i = 0; i < fila.size(); ++i) {
+        for (size_t i = 0; i < columnas.size(); ++i) {
             std::cout << fila[i];
             if (i < fila.size() - 1) std::cout << ", ";
         }
