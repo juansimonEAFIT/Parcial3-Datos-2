@@ -160,6 +160,16 @@ void ArbolBPlus::seleccionar(const std::string& tabla, const std::vector<std::st
         std::cout << columnas[i] << (i < columnas.size() - 1 ? ", " : "");
     }
     std::cout << " FROM " << tabla << std::endl;
+
+    // Buscar la tabla en el árbol B+
+    auto it = tablas.find(tabla);
+    if (it == tablas.end()) {
+        std::cerr << "Error: La tabla '" << tabla << "' no existe." << std::endl;
+        return;
+    }
+
+    // Mostrar la tabla
+    it->second.mostrarTabla();
 }
 
 // Implementación básica de actualizar
@@ -172,11 +182,32 @@ void ArbolBPlus::actualizar(const std::string& tabla, const std::map<std::string
         ++i;
     }
     std::cout << " WHERE " << condicion << std::endl;
+
+    // Buscar la tabla en el árbol B+
+    auto it = tablas.find(tabla);
+    if (it == tablas.end()) {
+        std::cerr << "Error: La tabla '" << tabla << "' no existe." << std::endl;
+        return;
+    }
+
+    // Actualizar la tabla
+    it->second.actualizarTabla(asignaciones, condicion);
 }
 
 // Implementación básica de eliminar
 void ArbolBPlus::eliminar(const std::string& tabla, const std::string& condicion) {
     std::cout << "Ejecutando: DELETE FROM " << tabla << " WHERE " << condicion << std::endl;
+
+    // Buscar la tabla en el árbol B+
+    auto it = tablas.find(tabla);
+
+    if (it == tablas.end()) {
+        std::cerr << "Error: La tabla '" << tabla << "' no existe." << std::endl;
+        return;
+    }
+
+    // Eliminar filas de la tabla
+    it->second.eliminarFilas(condicion);
 }
 
 void ArbolBPlus::insertar(const std::string& tabla, const std::vector<std::string>& columnas, const std::vector<std::string>& valores) {
@@ -191,4 +222,14 @@ void ArbolBPlus::insertar(const std::string& tabla, const std::vector<std::strin
         if (i < valores.size() - 1) std::cout << ", ";
     }
     std::cout << ")\n";
+
+    // Buscar la tabla en el árbol B+
+    auto it = tablas.find(tabla);
+    if (it == tablas.end()) {
+        std::cerr << "Error: La tabla '" << tabla << "' no existe." << std::endl;
+        return;
+    }
+
+    // Insertar la fila en la tabla
+    it->second.insertarFila(valores);
 }

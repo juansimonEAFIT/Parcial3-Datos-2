@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <iostream>
+#include <algorithm>
 
 struct Tabla {
     std::string nombre;
@@ -11,6 +14,11 @@ struct Tabla {
 
     Tabla() = default;  // Constructor predeterminado
     Tabla(const std::string& nombre, const std::vector<std::string>& columnas);
+
+    void insertarFila(const std::vector<std::string>& fila);
+    void mostrarTabla();
+    void actualizarTabla(const std::map<std::string, std::string>& asignaciones, const std::string& condicion);
+    void eliminarFilas(const std::string& condicion);
 };
 
 #endif

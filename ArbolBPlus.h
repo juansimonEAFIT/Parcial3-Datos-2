@@ -24,6 +24,7 @@ public:
     ArbolBPlus(int orden);
 
     void createTable(const std::string& nombre, const std::vector<std::string>& columnas);
+    
     void insertar(const std::string& tabla, const std::vector<std::string>& columnas, const std::vector<std::string>& valores);
     void seleccionar(const std::string& tabla, const std::vector<std::string>& columnas);
     void actualizar(const std::string& tabla, const std::map<std::string, std::string>& asignaciones, const std::string& condicion);
