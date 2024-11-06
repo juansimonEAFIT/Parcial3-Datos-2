@@ -1,19 +1,22 @@
-#include <iostream>        // Para entrada y salida estándar
-#include <string>          // Para manejo de cadenas de texto
-#include "ArbolBPlus.h"    // Encabezado del árbol B+, para operaciones SQL simuladas
-#include "AnalizadorSQL.h" // Encabezado del analizador SQL, que interpreta comandos SQL
+#include "ArbolBPlus.h"
+#include "AnalizadorSQL.h"
+#include <iostream>
 
 int main() {
-    ArbolBPlus arbol;                 // Instancia de ArbolBPlus para manejar operaciones de SQL
-    AnalizadorSQL analizador(arbol);  // Instancia de AnalizadorSQL que interpreta comandos
+    ArbolBPlus arbol(3);
+    AnalizadorSQL analizador(arbol);
 
     std::string comando;
     while (true) {
-        std::cout << "SQL> ";                // Indica al usuario que ingrese un comando
-        std::getline(std::cin, comando);     // Lee el comando completo ingresado
+        std::cout << "SQL> ";
+        std::getline(std::cin, comando);
 
-        if (comando == "exit") break;        // Si el comando es "exit", finaliza el programa
-        analizador.analizar(comando);        // Analiza y ejecuta el comando ingresado
+        if (comando == "exit") {
+            std::cout << "Saliendo del programa.\n";
+            break;
+        }
+
+        analizador.analizar(comando);
     }
 
     return 0;

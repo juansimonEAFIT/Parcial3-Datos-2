@@ -1,89 +1,118 @@
 #include "ArbolBPlus.h"
 #include <iostream>
 
-ArbolBPlus::ArbolBPlus(int grado) : grado(grado), raiz(nullptr) {}
+ArbolBPlus::ArbolBPlus(int grado) : raiz(nullptr), orden(grado) {}
 
-// Implementación del método insertar
-void ArbolBPlus::insertar(const std::string& tabla, const std::vector<std::string>& columnas, const std::vector<std::string>& valores) {
-    std::string clave = valores[0]; // Suponiendo que la primera columna es la clave
+std::unordered_map<std::string, Tabla> tablas;
+
+void ArbolBPlus::createTable(const std::string& nombre, const std::vector<std::string>& columnas) {
+    if (tablas.find(nombre) != tablas.end()) {
+        std::cerr << "Error: La tabla '" << nombre << "' ya existe." << std::endl;
+        return;
+    }
+
+    // Crear la nueva tabla
+    Tabla* nuevaTabla = new Tabla(nombre, columnas);
+
+    // Inserta la tabla en el árbol B+ y organiza en orden alfabético
     if (raiz == nullptr) {
         raiz = new NodoBPlus(true);
-        raiz->claves.push_back(clave);
+        raiz->claves.push_back(nombre);
+        raiz->tablas.push_back(nuevaTabla);
     } else {
-        if (raiz->claves.size() == 2 * grado - 1) {
+        if (raiz->claves.size() == static_cast<size_t>(2 * orden - 1)) {
             NodoBPlus* nuevaRaiz = new NodoBPlus(false);
             nuevaRaiz->hijos.push_back(raiz);
             dividirNodo(nuevaRaiz, 0, raiz);
-            insertarNoLleno(nuevaRaiz, clave);
+            insertarNoLleno(nuevaRaiz, nombre, nuevaTabla);
             raiz = nuevaRaiz;
         } else {
-            insertarNoLleno(raiz, clave);
+            insertarNoLleno(raiz, nombre, nuevaTabla);
         }
     }
+    tablas[nombre] = *nuevaTabla;
+
+    // Confirmación de creación de tabla
+    std::cout << "Ejecutando: CREATE TABLE " << nombre << " (";
+    for (size_t i = 0; i < columnas.size(); ++i) {
+        std::cout << columnas[i] << (i < columnas.size() - 1 ? ", " : "");
+    }
+    std::cout << ")\n";
 }
 
+// Implementación básica de dividirNodo
 void ArbolBPlus::dividirNodo(NodoBPlus* nodo, int indice, NodoBPlus* hijo) {
+    // Crea un nuevo nodo que contendrá las claves superiores de "hijo"
     NodoBPlus* nuevoNodo = new NodoBPlus(hijo->esHoja);
-    nuevoNodo->claves.resize(grado - 1);
-    for (int j = 0; j < grado - 1; ++j) {
-        nuevoNodo->claves[j] = hijo->claves[j + grado];
+    nuevoNodo->claves.resize(orden - 1);
+
+    // Mueve las claves superiores de "hijo" a "nuevoNodo"
+    for (int j = 0; j < orden - 1; ++j) {
+        nuevoNodo->claves[j] = hijo->claves[j + orden];
     }
-    if (!hijo->esHoja) {
-        nuevoNodo->hijos.resize(grado);
-        for (int j = 0; j < grado; ++j) {
-            nuevoNodo->hijos[j] = hijo->hijos[j + grado];
+
+    // Si "hijo" es una hoja, mueve también los punteros a tablas
+    if (hijo->esHoja) {
+        nuevoNodo->tablas.assign(hijo->tablas.begin() + orden, hijo->tablas.end());
+        hijo->tablas.resize(orden - 1);
+    } else {
+        // Si no es hoja, mueve los hijos correspondientes al nuevo nodo
+        nuevoNodo->hijos.resize(orden);
+        for (int j = 0; j < orden; ++j) {
+            nuevoNodo->hijos[j] = hijo->hijos[j + orden];
         }
     }
-    hijo->claves.resize(grado - 1);
+
+    // Reduce el tamaño de "hijo" (nodo original)
+    hijo->claves.resize(orden - 1);
+
+    // Inserta un nuevo hijo en el nodo padre
     nodo->hijos.insert(nodo->hijos.begin() + indice + 1, nuevoNodo);
-    nodo->claves.insert(nodo->claves.begin() + indice, hijo->claves[grado - 1]);
+
+    // Mueve la clave del medio de "hijo" al nodo actual (padre)
+    nodo->claves.insert(nodo->claves.begin() + indice, hijo->claves[orden - 1]);
 }
 
-void ArbolBPlus::insertarNoLleno(NodoBPlus* nodo, const std::string& clave) {
-    int i = nodo->claves.size() - 1;
+
+// Implementación básica de insertarNoLleno
+void ArbolBPlus::insertarNoLleno(NodoBPlus* nodo, const std::string& clave, Tabla* tabla) {
     if (nodo->esHoja) {
-        nodo->claves.push_back("");
-        while (i >= 0 && clave < nodo->claves[i]) {
-            nodo->claves[i + 1] = nodo->claves[i];
-            --i;
-        }
-        nodo->claves[i + 1] = clave;
+        // Inserta en el lugar ordenado en el nodo hoja
+        auto it = std::lower_bound(nodo->claves.begin(), nodo->claves.end(), clave);
+        size_t pos = it - nodo->claves.begin();
+        nodo->claves.insert(it, clave);
+        nodo->tablas.insert(nodo->tablas.begin() + pos, tabla);
     } else {
+        // Encuentra el hijo apropiado para la clave
+        int i = nodo->claves.size() - 1;
         while (i >= 0 && clave < nodo->claves[i]) {
-            --i;
+            i--;
         }
-        ++i;
-        if (nodo->hijos[i]->claves.size() == 2 * grado - 1) {
+        i++;
+
+        // Si el nodo hijo está lleno, divídelo
+        if (nodo->hijos[i]->claves.size() == static_cast<size_t>(2 * orden - 1)) {
             dividirNodo(nodo, i, nodo->hijos[i]);
             if (clave > nodo->claves[i]) {
-                ++i;
+                i++;
             }
         }
-        insertarNoLleno(nodo->hijos[i], clave);
+        insertarNoLleno(nodo->hijos[i], clave, tabla);
     }
 }
 
-// Implementación del método seleccionar
+
+
+// Implementación básica de seleccionar
 void ArbolBPlus::seleccionar(const std::string& tabla, const std::vector<std::string>& columnas) {
     std::cout << "Ejecutando: SELECT ";
     for (size_t i = 0; i < columnas.size(); ++i) {
-        std::cout << columnas[i];
-        if (i < columnas.size() - 1) std::cout << ", ";
+        std::cout << columnas[i] << (i < columnas.size() - 1 ? ", " : "");
     }
     std::cout << " FROM " << tabla << std::endl;
-
-    // Aquí se debería implementar la lógica para buscar y mostrar los datos seleccionados
-    NodoBPlus* nodo = raiz;
-    while (nodo != nullptr) {
-        for (const auto& clave : nodo->claves) {
-            std::cout << clave << " ";
-        }
-        nodo = nodo->siguiente;
-    }
-    std::cout << std::endl;
 }
 
-// Implementación del método actualizar
+// Implementación básica de actualizar
 void ArbolBPlus::actualizar(const std::string& tabla, const std::map<std::string, std::string>& asignaciones, const std::string& condicion) {
     std::cout << "Ejecutando: UPDATE " << tabla << " SET ";
     size_t i = 0;
@@ -93,70 +122,23 @@ void ArbolBPlus::actualizar(const std::string& tabla, const std::map<std::string
         ++i;
     }
     std::cout << " WHERE " << condicion << std::endl;
-
-    // Aquí se debería implementar la lógica para buscar y actualizar los datos
-    NodoBPlus* nodo = buscarNodo(raiz, condicion);
-    if (nodo != nullptr) {
-        for (auto& clave : nodo->claves) {
-            if (clave == condicion) {
-                for (const auto& asignacion : asignaciones) {
-                    clave = asignacion.second; // Actualiza la clave con el nuevo valor
-                }
-            }
-        }
-    }
 }
 
-// Implementación del método eliminar
+// Implementación básica de eliminar
 void ArbolBPlus::eliminar(const std::string& tabla, const std::string& condicion) {
     std::cout << "Ejecutando: DELETE FROM " << tabla << " WHERE " << condicion << std::endl;
-
-    // Aquí se debería implementar la lógica para buscar y eliminar los datos
-    eliminarClave(raiz, condicion);
 }
 
-// Función auxiliar para buscar un nodo en el árbol B+
-NodoBPlus* ArbolBPlus::buscarNodo(NodoBPlus* nodo, const std::string& clave) {
-    if (nodo == nullptr) return nullptr;
-
-    int i = 0;
-    while (i < nodo->claves.size() && clave > nodo->claves[i]) {
-        ++i;
+void ArbolBPlus::insertar(const std::string& tabla, const std::vector<std::string>& columnas, const std::vector<std::string>& valores) {
+    std::cout << "Ejecutando: INSERT INTO " << tabla << " (";
+    for (size_t i = 0; i < columnas.size(); ++i) {
+        std::cout << columnas[i];
+        if (i < columnas.size() - 1) std::cout << ", ";
     }
-
-    if (i < nodo->claves.size() && clave == nodo->claves[i]) {
-        return nodo;
+    std::cout << ") VALUES (";
+    for (size_t i = 0; i < valores.size(); ++i) {
+        std::cout << valores[i];
+        if (i < valores.size() - 1) std::cout << ", ";
     }
-
-    if (nodo->esHoja) {
-        return nullptr;
-    } else {
-        return buscarNodo(nodo->hijos[i], clave);
-    }
-}
-
-// Función auxiliar para eliminar una clave de un nodo en el árbol B+
-void ArbolBPlus::eliminarClave(NodoBPlus* nodo, const std::string& clave) {
-    if (nodo == nullptr) return;
-
-    int i = 0;
-    while (i < nodo->claves.size() && clave > nodo->claves[i]) {
-        ++i;
-    }
-
-    if (i < nodo->claves.size() && clave == nodo->claves[i]) {
-        nodo->claves.erase(nodo->claves.begin() + i);
-        if (nodo->esHoja) {
-            if (nodo->claves.empty() && nodo == raiz) {
-                delete nodo;
-                raiz = nullptr;
-            }
-        } else {
-            // Implementar la lógica para manejar la eliminación en nodos internos
-        }
-    } else {
-        if (!nodo->esHoja) {
-            eliminarClave(nodo->hijos[i], clave);
-        }
-    }
+    std::cout << ")\n";
 }
