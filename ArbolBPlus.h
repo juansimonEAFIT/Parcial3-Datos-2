@@ -13,6 +13,7 @@ class ArbolBPlus {
 private:
     NodoBPlus* raiz;
     int orden;
+    std::unordered_map<std::string, Tabla> tablas; // Miembro de clase
 
     // Funciones auxiliares
     void dividirNodo(NodoBPlus* nodo, int indice, NodoBPlus* hijo);
@@ -29,5 +30,6 @@ public:
     void eliminar(const std::string& tabla, const std::string& condicion);
     void mostrarArbol();
 };
+
 
 #endif

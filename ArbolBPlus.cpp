@@ -1,9 +1,10 @@
 #include "ArbolBPlus.h"
 #include <iostream>
+#include <algorithm>
 
 ArbolBPlus::ArbolBPlus(int grado) : raiz(nullptr), orden(grado) {}
 
-std::unordered_map<std::string, Tabla> tablas;
+// std::unordered_map<std::string, Tabla> tablas;
 
 void ArbolBPlus::createTable(const std::string& nombre, const std::vector<std::string>& columnas) {
     if (tablas.find(nombre) != tablas.end()) {
@@ -19,7 +20,7 @@ void ArbolBPlus::createTable(const std::string& nombre, const std::vector<std::s
         raiz->claves.push_back(nombre);
         raiz->tablas.push_back(nuevaTabla);
     } else {
-        if (raiz->claves.size() == static_cast<size_t>(2 * orden -1)) {
+        if (raiz->claves.size() == static_cast<size_t>(orden)) {
             NodoBPlus* nuevaRaiz = new NodoBPlus(false);
             nuevaRaiz->hijos.push_back(raiz);
             dividirNodo(nuevaRaiz, 0, raiz);
@@ -29,6 +30,7 @@ void ArbolBPlus::createTable(const std::string& nombre, const std::vector<std::s
     }
     tablas[nombre] = *nuevaTabla;
 
+    // Mensaje de confirmación
     std::cout << "Ejecutando: CREATE TABLE " << nombre << " (";
     for (size_t i = 0; i < columnas.size(); ++i) {
         std::cout << columnas[i] << (i < columnas.size() - 1 ? ", " : "");
@@ -36,48 +38,84 @@ void ArbolBPlus::createTable(const std::string& nombre, const std::vector<std::s
     std::cout << ")\n";
 }
 
+
+
 // Función para dividir un nodo lleno en dos y ajustar los hijos y claves en el nodo padre
-void ArbolBPlus::dividirNodo(NodoBPlus* nodo, int indice, NodoBPlus* hijo) {
+void ArbolBPlus::dividirNodo(NodoBPlus* padre, int indiceHijo, NodoBPlus* hijo) {
+    int maxClaves = orden;
+    int minClaves = (orden + 1) / 2;
     NodoBPlus* nuevoNodo = new NodoBPlus(hijo->esHoja);
-    nuevoNodo->claves.resize(orden - 1);
 
-    // Transferir la mitad de las claves al nuevo nodo
-    for (int j = 0; j < orden - 1; ++j) {
-        nuevoNodo->claves[j] = hijo->claves[j + orden];
-    }
+    int totalKeys = hijo->claves.size();
+    int splitIndex = totalKeys / 2; // Punto de división
 
+    // Para nodos hoja
     if (hijo->esHoja) {
-        nuevoNodo->tablas.assign(hijo->tablas.begin() + orden, hijo->tablas.end());
-        hijo->tablas.resize(orden - 1);
-    } else {
-        nuevoNodo->hijos.resize(orden);
-        for (int j = 0; j < orden; ++j) {
-            nuevoNodo->hijos[j] = hijo->hijos[j + orden];
-        }
+        // Copiar la segunda mitad de las claves y tablas al nuevo nodo
+        nuevoNodo->claves.assign(hijo->claves.begin() + splitIndex, hijo->claves.end());
+        nuevoNodo->tablas.assign(hijo->tablas.begin() + splitIndex, hijo->tablas.end());
+
+        // Redimensionar el nodo hijo
+        hijo->claves.resize(splitIndex);
+        hijo->tablas.resize(splitIndex);
+
+        // Ajustar punteros de hojas
+        nuevoNodo->siguiente = hijo->siguiente;
+        hijo->siguiente = nuevoNodo;
+
+        // Promover la primera clave del nuevo nodo
+        std::string clavePromovida = nuevoNodo->claves.front();
+
+        // Insertar clave promovida y nuevo nodo en el padre
+        padre->claves.insert(padre->claves.begin() + indiceHijo, clavePromovida);
+        padre->hijos.insert(padre->hijos.begin() + indiceHijo + 1, nuevoNodo);
     }
+    // Para nodos internos
+    else {
+        // Promover la clave central al padre
+        std::string clavePromovida = hijo->claves[splitIndex];
 
-    hijo->claves.resize(orden - 1);
+        // Copiar claves y hijos al nuevo nodo
+        nuevoNodo->claves.assign(hijo->claves.begin() + splitIndex + 1, hijo->claves.end());
+        nuevoNodo->hijos.assign(hijo->hijos.begin() + splitIndex + 1, hijo->hijos.end());
 
-    nodo->hijos.insert(nodo->hijos.begin() + indice + 1, nuevoNodo);
-    nodo->claves.insert(nodo->claves.begin() + indice, hijo->claves[orden - 1]);
+        // Redimensionar el nodo hijo
+        hijo->claves.resize(splitIndex);
+        hijo->hijos.resize(splitIndex + 1);
+
+        // Insertar clave promovida y nuevo nodo en el padre
+        padre->claves.insert(padre->claves.begin() + indiceHijo, clavePromovida);
+        padre->hijos.insert(padre->hijos.begin() + indiceHijo + 1, nuevoNodo);
+    }
 }
+
+
 
 // Inserción en un nodo no lleno
 void ArbolBPlus::insertarNoLleno(NodoBPlus* nodo, const std::string& clave, Tabla* tabla) {
     if (nodo->esHoja) {
-        auto it = std::lower_bound(nodo->claves.begin(), nodo->claves.end(), clave);
+        // Encontrar la posición donde insertar la clave
+        auto it = std::upper_bound(nodo->claves.begin(), nodo->claves.end(), clave);
         size_t pos = it - nodo->claves.begin();
+
+        // Insertar la clave y la tabla
         nodo->claves.insert(it, clave);
         nodo->tablas.insert(nodo->tablas.begin() + pos, tabla);
     } else {
+        // Encontrar el hijo apropiado para descender
         int i = nodo->claves.size() - 1;
         while (i >= 0 && clave < nodo->claves[i]) {
             i--;
         }
         i++;
 
-        if (nodo->hijos[i]->claves.size() == static_cast<size_t>(orden)) {
-            dividirNodo(nodo, i, nodo->hijos[i]);
+        NodoBPlus* hijo = nodo->hijos[i];
+
+        // Si el hijo está lleno, dividirlo
+        if (hijo->claves.size() == static_cast<size_t>(orden)) {
+            dividirNodo(nodo, i, hijo);
+
+            // Después de dividir, determinar en qué hijo debemos insertar
             if (clave > nodo->claves[i]) {
                 i++;
             }
@@ -85,6 +123,7 @@ void ArbolBPlus::insertarNoLleno(NodoBPlus* nodo, const std::string& clave, Tabl
         insertarNoLleno(nodo->hijos[i], clave, tabla);
     }
 }
+
 
 void ArbolBPlus::mostrarArbol() {
     std::cout << "Árbol B+ con estructura jerárquica:\n";
@@ -105,10 +144,14 @@ void ArbolBPlus::mostrarArbolAux(NodoBPlus* nodo, std::string prefix, bool esUlt
     }
     std::cout << std::endl;
 
-    for (size_t i = 0; i < nodo->hijos.size(); i++) {
-        mostrarArbolAux(nodo->hijos[i], prefix + (esUltimo ? "    " : "│   "), i == nodo->hijos.size() - 1);
+    if (!nodo->esHoja) {
+        for (size_t i = 0; i < nodo->hijos.size(); i++) {
+            mostrarArbolAux(nodo->hijos[i], prefix + (esUltimo ? "    " : "│   "), i == nodo->hijos.size() - 1);
+        }
     }
 }
+
+
 
 // Implementación básica de seleccionar
 void ArbolBPlus::seleccionar(const std::string& tabla, const std::vector<std::string>& columnas) {
