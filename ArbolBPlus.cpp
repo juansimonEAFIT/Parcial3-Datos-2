@@ -42,8 +42,8 @@ void ArbolBPlus::createTable(const std::string& nombre, const std::vector<std::s
 
 // Función para dividir un nodo lleno en dos y ajustar los hijos y claves en el nodo padre
 void ArbolBPlus::dividirNodo(NodoBPlus* padre, int indiceHijo, NodoBPlus* hijo) {
-    int maxClaves = orden;
-    int minClaves = (orden + 1) / 2;
+    // int maxClaves = orden;
+    // int minClaves = (orden + 1) / 2;
     NodoBPlus* nuevoNodo = new NodoBPlus(hijo->esHoja);
 
     int totalKeys = hijo->claves.size();

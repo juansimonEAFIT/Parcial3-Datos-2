@@ -30,7 +30,7 @@ int main() {
 
     arbol.mostrarArbol();
     std::cout << "\nTabla original" << std::endl;
-    arbol.seleccionar("Clientes", {"Edad", "Ciudad"});
+    arbol.seleccionar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"});
 
     // std::cout << "\nTabla actualizada 1" << std::endl;
     // arbol.actualizar("Clientes", {{"Edad", "26"}}, "ID = 1");
