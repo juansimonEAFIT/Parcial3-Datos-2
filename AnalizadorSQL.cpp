@@ -71,7 +71,7 @@ void AnalizadorSQL::analizarInsertar(std::istringstream& flujo) {
 void AnalizadorSQL::analizarSeleccionar(std::istringstream& flujo) {
     std::string restoComando;
     std::getline(flujo, restoComando);
-    std::cout << "Comando completo de SELECT recibido: " << restoComando << std::endl;
+    // std::cout << "Comando completo de SELECT recibido: " << restoComando << std::endl;
 
     // Expresión regular para capturar columnas, nombre de tabla, y condición opcional
     std::regex selectRegex(R"(\(([^)]+)\)\s*from\s+(\w+)(?:\s+where\s+(.+))?)", std::regex::icase);
@@ -79,26 +79,27 @@ void AnalizadorSQL::analizarSeleccionar(std::istringstream& flujo) {
 
     if (std::regex_search(restoComando, matches, selectRegex)) {
         // Verifica que la expresión regular haya encontrado partes del comando SELECT
-        std::cout << "Expresión regular aplicada exitosamente." << std::endl;
+        // std::cout << "Expresión regular aplicada exitosamente." << std::endl;
 
         std::string columnasStr = matches[1].str();
         std::string nombreTabla = matches[2].str();
         std::string condicion = matches.size() > 3 ? matches[3].str() : "";
 
+        // Depuración
         // Mostrar qué valores se capturaron
-        std::cout << "Columnas capturadas: " << columnasStr << std::endl;
-        std::cout << "Nombre de la tabla: " << nombreTabla << std::endl;
-        std::cout << "Condición capturada: " << condicion << std::endl;
+        // std::cout << "Columnas capturadas: " << columnasStr << std::endl;
+        // std::cout << "Nombre de la tabla: " << nombreTabla << std::endl;
+        // std::cout << "Condición capturada: " << condicion << std::endl;
 
         // Procesar la lista de columnas
         std::vector<std::string> columnas = procesarLista(columnasStr);
         
         // Mostrar las columnas procesadas
-        std::cout << "Columnas procesadas en vector: ";
-        for (const auto& col : columnas) {
-            std::cout << col << " ";
-        }
-        std::cout << std::endl;
+        // std::cout << "Columnas procesadas en vector: ";
+        // for (const auto& col : columnas) {
+        //     std::cout << col << " ";
+        // }
+        // std::cout << std::endl;
 
         // Llamar a la función seleccionar en el árbol B+ para mostrar resultados
         arbol.seleccionar(nombreTabla, columnas, condicion);

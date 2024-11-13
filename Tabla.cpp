@@ -1,7 +1,7 @@
 #include "Tabla.h"
 #include <iostream>
 #include <algorithm>
-#include <String>
+#include <string>
 
 // Constructor para inicializar la tabla con nombre y columnas
 Tabla::Tabla(const std::string& nombre, const std::vector<std::string>& columnas)
