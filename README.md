@@ -14,16 +14,17 @@
 ## Programming Language:
   - C++
 
-## Tools:
-  - Visual Studio Code.
-
-## Implementations:
-  - None.
-
 ## Requirements:
 Before running the program, ensure you have:
-  - C++ installed.
+  - C++ compiler.
   - An IDE or text editor such as Visual Studio Code to run the Python code.
+
+## Basic Code Information:
+### Class Table
+We implemented a basic class Table to simulate a SQL database, with the basic operations we needed to the project. SELECT, INSERT, DELETE, UPDATE.
+
+### B+ Tree
+We use an implementation of a B+ Tree in which its leaves (nodes) are objects of type table, with the keys of the leaves as a string vector.
 
 ---
 
@@ -53,7 +54,7 @@ The inputs are based on SQL statements, below you will find the structure of all
 
 ### CREATE TABLE
 ```bash
-CREATE TABLE table_name (nameColumn1, nameColumn2, ..., nameColumnN);
+CREATE TABLE table_name (nameColumn1, nameColumn2, ..., nameColumnN)
 ```
 ##### EXAMPLE
 ```bash
@@ -62,16 +63,16 @@ CREATE TABLE Clientes (ID, Nombre, Edad, Ciudad)
 
 ### INSERT INTO
 ```bash
-INSERT INTO table_name (column1, column2, ..., columnN) VALUES (value1, value2, ..., valueN);
+INSERT INTO table_name (column1, column2, ..., columnN) VALUES (value1, value2, ..., valueN)
 ```
 ##### EXAMPLE
 ```bash
-INSERT INTO Clientes (ID; Nombre, Edad, Ciudad) VALUES (1, Juan, 32, CDMX)
+INSERT INTO Clientes (ID, Nombre, Edad, Ciudad) VALUES (1, Juan, 32, CDMX)
 ```
 
 ### SELECT
 ```bash
-SELECT (column1, column2, ..., columnN) FROM table_name WHERE condition;
+SELECT (column1, column2, ..., columnN) FROM table_name WHERE condition
 ```
 ##### EXAMPLE (1)
 ```bash
@@ -84,7 +85,7 @@ SELECT (ID, Nombre, Edad, Ciudad) FROM Clientes WHERE ID=1
 
 ### UPDATE
 ```bash
-UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition;
+UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition
 ```
 ##### EXAMPLE
 ```bash
@@ -93,7 +94,7 @@ UPDATE Clientes SET Edad=32 WHERE ID=1
 
 ### DELETE
 ```bash
-DELETE FROM table_name WHERE condition;
+DELETE FROM table_name WHERE condition
 ```
 ##### EXAMPLE
 ```bash
