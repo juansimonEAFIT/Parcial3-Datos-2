@@ -8,14 +8,14 @@ int main() {
     AnalizadorSQL analizador(arbol);
 
     std::string comando;
-    arbol.createTable("Clientes", {"ID", "Nombre", "Edad", "Ciudad"});
-    arbol.createTable("Productos", {"ID", "Nombre", "Precio"});
-    arbol.createTable("Ventas", {"ID", "ID_Cliente", "ID_Producto", "Fecha"});
+    // arbol.createTable("Clientes", {"ID", "Nombre", "Edad", "Ciudad"});
+    // arbol.createTable("Productos", {"ID", "Nombre", "Precio"});
+    // arbol.createTable("Ventas", {"ID", "ID_Cliente", "ID_Producto", "Fecha"});
 
-    arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"1", "Juan", "32", "CDMX"});
-    arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"2", "Ana", "30", "Guadalajara"});
-    arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"3", "Pedro", "40", "Monterrey"});
-    arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"4", "María", "35", "CDMX"});
+    // arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"1", "Juan", "32", "CDMX"});
+    // arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"2", "Ana", "30", "Guadalajara"});
+    // arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"3", "Pedro", "40", "Monterrey"});
+    // arbol.insertar("Clientes", {"ID", "Nombre", "Edad", "Ciudad"}, {"4", "María", "35", "CDMX"});
 
     while (true) {
         std::cout << "SQL> ";
