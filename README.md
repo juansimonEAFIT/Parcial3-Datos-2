@@ -29,26 +29,26 @@ Before running the program, ensure you have:
 
 ## Instructions:
 
-### 1. Clone or Download the Repository:
+### Clone or Download the Repository:
 
-#### 1.1 Cloning:
+#### Cloning:
 Clone the repository to your local machine with the following command:
 ```bash
 git clone <repository-url>
 ```
-#### 1.2 Downloading:
+#### Downloading:
   - Click the green "Code" button at the top of the repository.
   - Select "Download ZIP".
   - Extract the ZIP file on your local machine.
 
 ---
 
-### 2. Running the Code:
+## Running the Code:
 The code works as a SQL simulator. The actions to be performed work with SQL language statements.
 The functions that we implement in the code are CREATE TABLE, INSERT INTO, SELECT, UPDATE and DELETE.
 
 ---
-### Explanation of the Inputs.
+## Explanation of the Inputs.
 The inputs are based on SQL statements, below you will find the structure of all of them and examples of each one.
 
 #### CREATE TABLE
