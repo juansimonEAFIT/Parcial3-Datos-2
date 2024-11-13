@@ -26,7 +26,7 @@ public:
     void createTable(const std::string& nombre, const std::vector<std::string>& columnas);
     
     void insertar(const std::string& tabla, const std::vector<std::string>& columnas, const std::vector<std::string>& valores);
-    void seleccionar(const std::string& tabla, const std::vector<std::string>& columnas);
+    void seleccionar(const std::string& tabla, const std::vector<std::string>& columnas, const std::string& condicion);
     void actualizar(const std::string& tabla, const std::map<std::string, std::string>& asignaciones, const std::string& condicion);
     void eliminar(const std::string& tabla, const std::string& condicion);
     void mostrarArbol();
